@@ -727,6 +727,13 @@ function videoHTML(url){
   const src = yt ? `https://www.youtube-nocookie.com/embed/${yt[1]}?rel=0` : url;
   return `<div class="video"><iframe src="${esc(src)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
 }
+function theLoiCamOn(){
+  if (!L.anhLoiCamOn) return '';
+  const a = {tep:L.anhLoiCamOn, chu:'Lời cảm ơn của các gia đình lớp C4'};
+  return `<div class="the" style="padding:12px"><div class="tieu-de tieu" style="padding:4px 6px 10px">💌 Lời cảm ơn của các gia đình</div>
+    <button data-album="${ALBUM.push([a])-1}" data-vt="0" style="display:block;width:100%">${theAnh(a,'anh-that')}</button>
+    <p class="nho-xam" style="text-align:center;margin:8px 0 0">Chạm vào ảnh để xem to</p></div>`;
+}
 function trangTriAn(){
   const anhLop = anhLopCo();
   const ke = (L.keChuyen||[]).length ? `<div class="the"><div class="tieu-de tieu">🏡 Ở nhà, con kể về cô</div>${L.keChuyen.map(k=>`<div class="ke-chuyen">${esc(k.loi)}<div class="ai">Bố mẹ bé ${esc(k.be)}</div></div>`).join('')}</div>` : '';
@@ -740,8 +747,8 @@ function trangTriAn(){
     </div>
     ${anhLop && anhLop.tep ? `<div class="polaroid"><button data-album="${ALBUM.push([anhLop])-1}" data-vt="0" style="display:block;width:100%">${theAnh(anhLop)}</button><div class="chu-anh">Cô Thảo, cô Thủy và các con lớp C4</div></div>` : ''}
     <div class="the giay-thu"><div class="thu">${esc(L.thuTriAn)}<span class="ky">Hội Cha mẹ học sinh lớp C4</span></div></div>
+    ${theLoiCamOn()}
     ${ke}
-    ${chuc}
     ${L.video ? `<div class="the"><div class="tieu-de tieu">🎥 Chúng con yêu cô</div>${videoHTML(L.video)}</div>` : ''}`;
 }
 
@@ -764,6 +771,7 @@ function trangRieng(){
     const tatCa = [...(L.keChuyen||[]).map(k=>({loi:k.loi, ai:'Bố mẹ bé '+k.be})), ...(L.loiChuc||[])];
     return `
       <div class="the chao-lon" style="text-align:center"><div style="width:80px;margin:0 auto">${svgCo(80)}</div><h2>Góc của ${esc(c.goi)}</h2><p class="nho-xam">${esc(c.ten)}</p></div>
+      ${theLoiCamOn()}
       ${tatCa.length ? `<div class="the"><div class="tieu-de tieu">💌 Các gia đình gửi cô</div><div class="tuong">${tatCa.map(c=>`<div class="giay">${esc(c.loi)}<div class="ai">${esc(c.ai)}</div></div>`).join('')}</div></div>` : ''}
       ${ds.length ? `<div class="the"><div class="tieu-de tieu">📷 Cô với các con</div>${album(ds, 12)}</div>` : ''}
       <div class="the giay-thu"><div class="thu">${esc(L.thuTriAn)}<span class="ky">Hội Cha mẹ học sinh lớp C4</span></div></div>`;
