@@ -33,34 +33,55 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--la-dam);outline
 <body>
 <main>
   <h1>Nén ảnh trước khi tải lên</h1>
-  <p>Ảnh chụp từ điện thoại thường nặng 2–5 MB. Nén lại thì trang lớp mở nhanh hơn, phụ huynh đỡ tốn dung lượng 4G.</p>
+  <p>Chọn ảnh của ai → chọn ảnh → tải về. Công cụ tự nén nhẹ (ảnh 3 MB còn khoảng 200–300 KB) và <b>tự đặt tên đúng</b> để trang lớp biết ảnh thuộc mục nào.</p>
   <p class="nhat">Ảnh chỉ được xử lý ngay trên máy anh, không gửi đi đâu cả.</p>
 
   <fieldset>
-    <legend>Loại ảnh</legend>
-    <label class="chon"><input type="radio" name="kieu" value="album" checked>
-      <span><b>Ảnh album</b> (các dịp, ảnh riêng của bé, ảnh cô với lớp)<br><span class="nhat">Thu cạnh dài nhất về 1600px, giữ nguyên khung ảnh.</span></span></label>
-    <label class="chon"><input type="radio" name="kieu" value="daidien">
-      <span><b>Ảnh đại diện của bé</b><br><span class="nhat">Cắt vuông (lệch lên trên một chút để giữ khuôn mặt), cỡ 480px, đặt tên <code>dai-dien.jpg</code>.</span></span></label>
+    <legend>1. Ảnh này là của</legend>
+    <select id="chu" style="width:100%;font-size:17px;padding:10px;border-radius:10px;border:2px solid #EADCC4;background:#fff"></select>
+    <label class="chon" id="oDaiDien" hidden><input type="checkbox" id="daiDien">
+      <span><b>Dùng làm ảnh đại diện của bé</b><br><span class="nhat">Cắt vuông (lệch lên trên để giữ khuôn mặt). Chỉ chọn 1 ảnh.</span></span></label>
+    <p class="nhat" id="viDuTen"></p>
   </fieldset>
 
   <div class="hang-nut">
-    <label class="nut" for="tep">Chọn ảnh…</label>
+    <label class="nut" for="tep">2. Chọn ảnh…</label>
     <input id="tep" type="file" accept="image/*" multiple hidden>
-    <button class="nut phu" id="taiHet" disabled>Tải tất cả ảnh đã nén</button>
+    <button class="nut phu" id="taiHet" disabled>3. Tải tất cả ảnh đã nén</button>
   </div>
   <p class="nhat" id="tomTat"></p>
   <div id="luoi"></div>
 
   <fieldset>
     <legend>Sau khi nén</legend>
-    <p>1. Các ảnh nén nằm trong thư mục <b>Tải về</b> (Downloads) của máy.</p>
-    <p>2. Lên GitHub, mở đúng thư mục (ví dụ <code>anh/trung-thu</code> hoặc <code>anh/be/12-mixue</code>), chọn <b>Add file → Upload files</b>, kéo ảnh vào rồi bấm <b>Commit changes</b>.</p>
+    <p>• Ảnh đã nén và <b>đã được đặt tên sẵn</b>, nằm trong thư mục <b>Tải về</b> (Downloads).</p>
+    <p>• Mở repo trên GitHub → <b>Add file → Upload files</b> → kéo các ảnh đó vào → <b>Commit changes</b>. Không cần thư mục.</p>
+    <p>• Khoảng 1–2 phút sau ảnh tự hiện đúng chỗ trên trang lớp.</p>
     <p class="nhat">Ảnh HEIC của iPhone: nếu không mở được ở đây thì mở trang này bằng Safari, hoặc đổi sang JPG trước.</p>
   </fieldset>
 </main>
+<script src="du-lieu.js"></script>
 <script>
 const KET_QUA = [];
+const D = window.DU_LIEU || {be:[], moc:[]};
+(function(){
+  const s = document.querySelector('#chu');
+  const nhom = (nhan, ds) => `<optgroup label="${nhan}">${ds.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</optgroup>`;
+  s.innerHTML = nhom('Các dịp trong năm', D.moc.filter(m=>m.tenAnh).map(m=>['moc:'+m.tenAnh, m.ten]))
+    + nhom('Cô giáo', [['co:co-voi-lop','Cô với các con']])
+    + nhom('Từng bạn', D.be.filter(b=>b.tenAnh).map(b=>['be:'+b.tenAnh, b.goi]));
+  const hn = new Date(), m = D.moc.filter(x=>x.tenAnh).map(x=>{ const [d,mo,y]=x.ngay.split('/').map(Number); return {x, t:new Date(y,mo-1,d)}; })
+    .filter(o=>o.t<=hn).sort((a,b)=>b.t-a.t)[0];
+  if (m) s.value = 'moc:'+m.x.tenAnh;
+  const capNhat = ()=>{ const la = s.value.startsWith('be:'); document.querySelector('#oDaiDien').hidden = !la; if(!la) document.querySelector('#daiDien').checked=false;
+    document.querySelector('#viDuTen').textContent = 'Tên ảnh sẽ là: ' + tenMoi(0, 1); };
+  s.addEventListener('change', capNhat); document.querySelector('#daiDien').addEventListener('change', capNhat);
+  setTimeout(capNhat);
+})();
+const tienTo = () => document.querySelector('#chu').value.split(':')[1];
+const laDaiDien = () => document.querySelector('#daiDien').checked;
+const DAU = (()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; })();
+function tenMoi(k, tong){ return laDaiDien() ? `${tienTo()}-dai-dien.jpg` : `${tienTo()}-${DAU}-${String(k+1).padStart(2,'0')}.jpg`; }
 const $ = s => document.querySelector(s);
 const kb = n => n > 1048576 ? (n/1048576).toFixed(1)+' MB' : Math.round(n/1024)+' KB';
 const tenGoc = f => f.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D')
@@ -92,16 +113,17 @@ async function nen(f, kieu){
 
 $('#tep').addEventListener('change', async e=>{
   const ds = [...e.target.files]; if (!ds.length) return;
-  const kieu = document.querySelector('input[name=kieu]:checked').value;
+  const kieu = laDaiDien() ? 'daidien' : 'album';
+  const dsChon = laDaiDien() ? ds.slice(0,1) : ds;
   KET_QUA.length = 0; $('#luoi').innerHTML = ''; $('#taiHet').disabled = true;
   let truoc = 0, sau = 0;
-  for (let k=0; k<ds.length; k++){
-    const f = ds[k], o = document.createElement('div'); o.className = 'o';
+  for (let k=0; k<dsChon.length; k++){
+    const f = dsChon[k], o = document.createElement('div'); o.className = 'o';
     o.innerHTML = `<img alt=""><div class="ten">${f.name}</div><div class="nhat">Đang nén…</div>`;
     $('#luoi').appendChild(o);
     try{
       const b = await nen(f, kieu);
-      const ten = kieu==='daidien' ? (ds.length===1 ? 'dai-dien.jpg' : `dai-dien-${tenGoc(f)}.jpg`) : `${tenGoc(f)}.jpg`;
+      const ten = tenMoi(k, dsChon.length);
       KET_QUA.push({b, ten}); truoc += f.size; sau += b.size;
       o.querySelector('img').src = URL.createObjectURL(b);
       o.querySelector('.ten').textContent = ten;

@@ -1,9 +1,8 @@
 /* =====================================================================
    DỮ LIỆU LỚP C4 — anh Hùng sửa file này để cập nhật trang
-   - ẢNH: KHÔNG cần sửa file này. Chỉ cần tải ảnh vào đúng thư mục trên GitHub:
-       anh/trung-thu/ ... (album từng dịp, tên thư mục ghi ở "thuMuc")
-       anh/be/12-mixue/ ... (ảnh riêng của bé; ảnh tên "dai-dien..." là ảnh đại diện)
-       anh/co-voi-lop/ ... (ảnh cô với các con)
+   - ẢNH: KHÔNG cần sửa file này, cũng KHÔNG cần thư mục.
+       Dùng công cụ nen-anh.html để nén và tự đặt tên ảnh, rồi tải thẳng lên repo.
+       Trang nhận ảnh theo phần đầu tên file: trung-thu-..., mixue-..., co-voi-lop-...
    - Chỉ sửa file này khi thêm lời kể, lời chúc, video, hoặc muốn ghi chú thích cho ảnh
    - Nhớ giữ đúng dấu phẩy, ngoặc kép như mẫu
    ===================================================================== */
@@ -38,7 +37,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "01-khanh-an"
+   "tenAnh": "khanh-an"
   },
   {
    "goi": "Trí Anh",
@@ -47,7 +46,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "02-tri-anh"
+   "tenAnh": "tri-anh"
   },
   {
    "goi": "Minh Anh",
@@ -56,7 +55,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "03-minh-anh"
+   "tenAnh": "minh-anh"
   },
   {
    "goi": "Bảo Hân",
@@ -65,7 +64,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "04-bao-han"
+   "tenAnh": "bao-han"
   },
   {
    "goi": "Tuấn Khải",
@@ -74,7 +73,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "05-tuan-khai"
+   "tenAnh": "tuan-khai"
   },
   {
    "goi": "Khánh Linh",
@@ -83,7 +82,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "06-khanh-linh"
+   "tenAnh": "khanh-linh"
   },
   {
    "goi": "Duy Nam",
@@ -92,7 +91,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "07-duy-nam"
+   "tenAnh": "duy-nam"
   },
   {
    "goi": "Bảo Ngọc",
@@ -101,7 +100,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "08-bao-ngoc"
+   "tenAnh": "bao-ngoc"
   },
   {
    "goi": "Diệu Nhi",
@@ -110,7 +109,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "09-dieu-nhi"
+   "tenAnh": "dieu-nhi"
   },
   {
    "goi": "Tuệ Nhi",
@@ -119,7 +118,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "10-tue-nhi"
+   "tenAnh": "tue-nhi"
   },
   {
    "goi": "NH. Tuệ Nhi",
@@ -128,7 +127,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "11-nh-tue-nhi"
+   "tenAnh": "nh-tue-nhi"
   },
   {
    "goi": "Mixue",
@@ -137,7 +136,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "12-mixue"
+   "tenAnh": "mixue"
   },
   {
    "goi": "Đức Thiện",
@@ -146,7 +145,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "13-duc-thien"
+   "tenAnh": "duc-thien"
   },
   {
    "goi": "Công Thịnh",
@@ -155,7 +154,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "14-cong-thinh"
+   "tenAnh": "cong-thinh"
   },
   {
    "goi": "Minh Thu",
@@ -164,7 +163,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "15-minh-thu"
+   "tenAnh": "minh-thu"
   },
   {
    "goi": "Cát Tiên",
@@ -173,7 +172,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "16-cat-tien"
+   "tenAnh": "cat-tien"
   },
   {
    "goi": "Minh Tú",
@@ -182,7 +181,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "17-minh-tu"
+   "tenAnh": "minh-tu"
   },
   {
    "goi": "Khánh Vân",
@@ -191,7 +190,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "18-khanh-van"
+   "tenAnh": "khanh-van"
   },
   {
    "goi": "Bảo Vy",
@@ -200,7 +199,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "19-bao-vy"
+   "tenAnh": "bao-vy"
   },
   {
    "goi": "Như Ý",
@@ -209,7 +208,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "20-nhu-y"
+   "tenAnh": "nhu-y"
   },
   {
    "goi": "Đại Nam",
@@ -218,7 +217,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "21-dai-nam"
+   "tenAnh": "dai-nam"
   },
   {
    "goi": "Ngọc Duy",
@@ -227,7 +226,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "22-ngoc-duy"
+   "tenAnh": "ngoc-duy"
   },
   {
    "goi": "Phương Linh",
@@ -236,7 +235,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "23-phuong-linh"
+   "tenAnh": "phuong-linh"
   },
   {
    "goi": "Ngọc Diệp",
@@ -245,7 +244,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "24-ngoc-diep"
+   "tenAnh": "ngoc-diep"
   },
   {
    "goi": "Bảo Anh",
@@ -254,7 +253,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "25-bao-anh"
+   "tenAnh": "bao-anh"
   },
   {
    "goi": "Bảo Châu",
@@ -263,7 +262,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "26-bao-chau"
+   "tenAnh": "bao-chau"
   },
   {
    "goi": "Bảo An",
@@ -272,7 +271,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "27-bao-an"
+   "tenAnh": "bao-an"
   },
   {
    "goi": "Mạnh Bảo",
@@ -281,7 +280,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "28-manh-bao"
+   "tenAnh": "manh-bao"
   },
   {
    "goi": "Đăng Sơn",
@@ -290,7 +289,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "29-dang-son"
+   "tenAnh": "dang-son"
   },
   {
    "goi": "Nam Khánh",
@@ -300,7 +299,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "30-nam-khanh"
+   "tenAnh": "nam-khanh"
   },
   {
    "goi": "Tuệ An",
@@ -309,7 +308,7 @@ window.DU_LIEU = {
    "anhDaiDien": "",
    "anh": [],
    "loiBoMe": "",
-   "thuMuc": "31-tue-an"
+   "tenAnh": "tue-an"
   }
  ],
  "thuTriAn": `Kính gửi cô Thảo và cô Thủy,
@@ -331,28 +330,28 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ngay": "05/09/2026",
    "ico": "🎒",
    "anh": [],
-   "thuMuc": "khai-giang"
+   "tenAnh": "khai-giang"
   },
   {
    "ten": "Tết Trung thu",
    "ngay": "25/09/2026",
    "ico": "🏮",
    "anh": [],
-   "thuMuc": "trung-thu"
+   "tenAnh": "trung-thu"
   },
   {
    "ten": "Phụ nữ Việt Nam 20/10",
    "ngay": "20/10/2026",
    "ico": "🌷",
    "anh": [],
-   "thuMuc": "20-10"
+   "tenAnh": "20-10"
   },
   {
    "ten": "Tạm biệt bạn Nam Khánh",
    "ngay": "18/11/2026",
    "ico": "✈️",
    "anh": [],
-   "thuMuc": "tam-biet-nam-khanh",
+   "tenAnh": "tam-biet-nam-khanh",
    "ghiChu": "Hôm nay bạn Nam Khánh chuyển sang trường mới. Cả lớp chúc bạn học thật vui!"
   },
   {
@@ -360,28 +359,28 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ngay": "20/11/2026",
    "ico": "💐",
    "anh": [],
-   "thuMuc": "20-11"
+   "tenAnh": "20-11"
   },
   {
    "ten": "Tết Nguyên đán",
    "ngay": "06/02/2027",
    "ico": "🧧",
    "anh": [],
-   "thuMuc": "tet"
+   "tenAnh": "tet"
   },
   {
    "ten": "Quốc tế Phụ nữ 8/3",
    "ngay": "08/03/2027",
    "ico": "🌸",
    "anh": [],
-   "thuMuc": "8-3"
+   "tenAnh": "8-3"
   },
   {
    "ten": "Tổng kết năm học",
    "ngay": "31/05/2027",
    "ico": "🎓",
    "anh": [],
-   "thuMuc": "tong-ket"
+   "tenAnh": "tong-ket"
   }
  ],
  "maCo": "2011"

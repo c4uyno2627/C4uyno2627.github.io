@@ -328,20 +328,18 @@ const luu = v => { try{ localStorage.setItem(KHOA_LUU, JSON.stringify(v)); }catc
 const docLuu = () => { try{ return JSON.parse(localStorage.getItem(KHOA_LUU)); }catch(e){ return null; } };
 const xoaLuu = () => { try{ localStorage.removeItem(KHOA_LUU); }catch(e){} };
 
-/* ================= Ảnh tự động theo thư mục =================
-   Anh chỉ cần tải ảnh vào đúng thư mục trên GitHub, trang tự hiện.
-   anh/<thư mục dịp>/...      -> album dịp đó (thư mục ghi ở "thuMuc" của mỗi dịp)
-   anh/be/<thư mục bé>/...    -> ảnh riêng của bé; ảnh tên bắt đầu "dai-dien" (hoặc ảnh đầu tiên) là ảnh đại diện
-   anh/co-voi-lop/...         -> ảnh đầu tiên lên trang Tri ân, cả thư mục vào "Góc của cô" */
-let ANH_TM = {};
+/* ================= Ảnh tự động theo TÊN FILE =================
+   Không cần thư mục. Anh chỉ cần tải ảnh lên repo, đặt tên bắt đầu bằng:
+   trung-thu-..., 20-10-..., 20-11-..., khai-giang-..., tet-..., 8-3-..., tong-ket-...  -> album dịp đó
+   mixue-..., bao-ngoc-..., nh-tue-nhi-...  (tên ghi ở "tenAnh" của từng bé)          -> ảnh riêng của bé
+   <tên bé>-dai-dien.jpg                                                              -> ảnh đại diện
+   co-voi-lop-...                                                                     -> ảnh cô với các con
+   HOẶC để ảnh trong thư mục cùng tên: anh/trung-thu/, anh/mixue/ (ảnh "dai-dien.jpg" là ảnh đại diện).
+   (Công cụ nen-anh.html tự đặt tên đúng.) */
+let ANH_DS = [];
 const DUOI_ANH = /\.(jpe?g|png|webp|gif|avif)$/i;
 const soSanhTen = (a,b) => a.localeCompare(b, 'vi', {numeric:true});
-function nhomAnh(dsDuongDan){
-  const tm = {};
-  dsDuongDan.filter(p=>p.startsWith('anh/') && DUOI_ANH.test(p)).sort(soSanhTen).forEach(p=>{
-    const thu = p.slice(0, p.lastIndexOf('/')); (tm[thu] = tm[thu] || []).push(p); });
-  return tm;
-}
+const tenFile = p => p.slice(p.lastIndexOf('/')+1).toLowerCase();
 function khoRepo(){
   const h = location.hostname;
   if (!h.endsWith('.github.io')) return null;
@@ -349,30 +347,34 @@ function khoRepo(){
   return { chu: h.split('.')[0], repo: (doan.length && !/\.html?$/.test(doan[0])) ? doan[0] : h };
 }
 async function taiDanhSachAnh(){
-  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh')); if (c && c.tm) ANH_TM = c.tm; }catch(e){}
+  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh2')); if (c && c.ds) ANH_DS = c.ds; }catch(e){}
   const kho = khoRepo(); if (!kho) return;
   try{
     const r = await fetch(`https://api.github.com/repos/${kho.chu}/${kho.repo}/git/trees/HEAD?recursive=1`);
     if (!r.ok) return;
-    const tm = nhomAnh((await r.json()).tree.filter(x=>x.type==='blob').map(x=>x.path));
-    const doi = JSON.stringify(tm) !== JSON.stringify(ANH_TM);
-    ANH_TM = tm;
-    try{ localStorage.setItem('lop-c4-anh', JSON.stringify({t:Date.now(), tm})); }catch(e){}
+    const ds = (await r.json()).tree.filter(x=>x.type==='blob' && DUOI_ANH.test(x.path) && x.path!=='og.png').map(x=>x.path).sort((a,b)=>soSanhTen(tenFile(a),tenFile(b)));
+    const doi = JSON.stringify(ds) !== JSON.stringify(ANH_DS);
+    ANH_DS = ds;
+    try{ localStorage.setItem('lop-c4-anh2', JSON.stringify({t:Date.now(), ds})); }catch(e){}
     if (doi && NGUOI) doiTab(TAB, false, false);
   }catch(e){}
 }
-const tuThuMuc = tm => (ANH_TM['anh/'+tm] || []).map(p=>({tep:p, chu:''}));
+// Ảnh thuộc mục "tt" nếu: nằm trong thư mục tên tt (vd anh/trung-thu/, anh/mixue/, anh/12-mixue/)
+// hoặc tên file bắt đầu bằng "tt-" (vd trung-thu-01.jpg, mixue-dai-dien.jpg)
+const thuMucCua = p => { const k = p.split('/'); return k.length>1 ? k[k.length-2].toLowerCase() : ''; };
+const trongThuMuc = (p, tt) => { const m = thuMucCua(p); return m===tt || m.endsWith('-'+tt); };
+const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return trongThuMuc(p,tt) || f.startsWith(tt+'-') || f.replace(DUOI_ANH,'')===tt; }).map(p=>({tep:p, chu:''}));
 function gop(...nhom){ const da = new Set(), kq = [];
   nhom.flat().forEach(a=>{ if (a && a.tep && !da.has(a.tep)){ da.add(a.tep); kq.push(a); } }); return kq; }
 function anhDaiDienCua(i){
   const b = L.be[i], dd = chuanAnh(b.anhDaiDien); if (dd && dd.tep) return dd;
-  const ds = tuThuMuc('be/'+(b.thuMuc||'')); if (!ds.length) return null;
-  return ds.find(a=>/\/dai-dien[^\/]*$/i.test(a.tep)) || ds[0];
+  const ds = theoTen(b.tenAnh); if (!ds.length) return null;
+  return ds.find(a=>{ const f = tenFile(a.tep); return f.startsWith(b.tenAnh+'-dai-dien') || (trongThuMuc(a.tep,b.tenAnh) && f.startsWith('dai-dien')); }) || ds[0];
 }
-const anhRiengCua = i => gop(dsAnh(L.be[i].anh), tuThuMuc('be/'+(L.be[i].thuMuc||'')));
-const anhMoc = m => gop(dsAnh(m.anh), m.thuMuc ? tuThuMuc(m.thuMuc) : []);
-const anhLopCo = () => chuanAnh(L.anhCoVoiLop) && chuanAnh(L.anhCoVoiLop).tep ? chuanAnh(L.anhCoVoiLop) : tuThuMuc('co-voi-lop')[0] || null;
-const anhCuaCo = () => gop(dsAnh(L.anhCo), tuThuMuc('co-voi-lop'));
+const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh));
+const anhMoc = m => gop(dsAnh(m.anh), theoTen(m.tenAnh));
+const anhLopCo = () => chuanAnh(L.anhCoVoiLop) && chuanAnh(L.anhCoVoiLop).tep ? chuanAnh(L.anhCoVoiLop) : theoTen('co-voi-lop')[0] || null;
+const anhCuaCo = () => gop(dsAnh(L.anhCo), theoTen('co-voi-lop'));
 
 /* ================= Lớp phủ + nút Quay lại ================= */
 const LOP_MO = [];
