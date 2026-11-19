@@ -358,11 +358,28 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
  "video": "",
  "moc": [
   {
+   "ten": "Sinh nhật các bạn tháng 8",
+   "ngay": "31/08/2026",
+   "ico": "🎂",
+   "anh": [],
+   "tenAnh": "sinh-nhat-thang-8",
+   "ghiChu": "Mixue, Tuệ Nhi, Bảo An và Bảo Vy thổi nến cùng cả lớp"
+  },
+  {
+   "ten": "Mừng Quốc khánh 2/9",
+   "ngay": "01/09/2026",
+   "ico": "🇻🇳",
+   "anh": [],
+   "tenAnh": "quoc-khanh-2-9",
+   "ghiChu": "Cả lớp mặc áo cờ đỏ, làm đồng hồ cờ và chạy vui ngoài sân"
+  },
+  {
    "ten": "Khai giảng",
    "ngay": "05/09/2026",
    "ico": "🎒",
    "anh": [],
-   "tenAnh": "khai-giang"
+   "tenAnh": "khai-giang",
+   "ghiChu": "Năm học đầu tiên của lớp C4 bắt đầu, 2 cô mặc áo dài đỏ đón các con"
   },
   {
    "ten": "Tết Trung thu",
@@ -370,6 +387,21 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ico": "🏮",
    "anh": [],
    "tenAnh": "trung-thu"
+  },
+  {
+   "ten": "Sinh nhật bạn Bảo Hân",
+   "ngay": "28/09/2026",
+   "ico": "🎂",
+   "anh": [],
+   "tenAnh": "sinh-nhat-thang-9"
+  },
+  {
+   "ten": "Họp phụ huynh đầu năm",
+   "ngay": "30/09/2026",
+   "ico": "🤝",
+   "anh": [],
+   "tenAnh": "hop-phu-huynh",
+   "ghiChu": "Bố mẹ lớp C4 gặp 2 cô và cùng viết lời chia sẻ cho các con"
   },
   {
    "ten": "Phụ nữ Việt Nam 20/10",

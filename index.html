@@ -201,6 +201,26 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--la-dam);outline
 .album button{padding:0;display:block;width:100%}
 img.hong{background:repeating-linear-gradient(45deg,var(--kem2),var(--kem2) 8px,#FBE6C6 8px,#FBE6C6 16px);min-height:60px}
 
+/* ===== Màn mở quà cho cô ===== */
+.qua{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
+  background:radial-gradient(circle at 50% 38%,#fff6e0 0,#ffe3e8 45%,#f6c8d4 100%);cursor:pointer;transition:opacity .7s}
+.qua .gui{font-size:15px;color:#9a5a6a;letter-spacing:.02em}
+.qua h2{font-family:'Baloo 2',cursive;font-size:34px;line-height:1.1;color:#b23a57;margin:2px 0 26px}
+.hop-qua{position:relative;width:180px;height:170px;animation:lac 2.4s ease-in-out infinite}
+.hop-qua .than{position:absolute;bottom:0;left:10px;width:160px;height:118px;border-radius:10px;background:#e94f6e;box-shadow:inset 0 -10px 0 rgba(0,0,0,.08),0 14px 24px rgba(178,58,87,.25)}
+.hop-qua .nap{position:absolute;top:30px;left:0;width:180px;height:34px;border-radius:8px;background:#f2657f;box-shadow:0 4px 0 rgba(0,0,0,.08);transition:transform .8s cubic-bezier(.3,1.4,.5,1),opacity .8s}
+.hop-qua .ruy{position:absolute;left:78px;width:24px;background:#ffd25e}
+.hop-qua .than .ruy{top:0;bottom:0}.hop-qua .nap .ruy{top:0;bottom:0}
+.hop-qua .no{position:absolute;top:0;left:52px;width:76px;height:36px;transition:transform .8s cubic-bezier(.3,1.4,.5,1),opacity .8s}
+.hop-qua .no::before,.hop-qua .no::after{content:"";position:absolute;top:4px;width:34px;height:26px;border:7px solid #ffd25e;border-radius:50% 50% 50% 50%/60% 60% 40% 40%}
+.hop-qua .no::before{left:0;transform:rotate(-18deg)}.hop-qua .no::after{right:0;transform:rotate(18deg)}
+.qua.mo .nap,.qua.mo .no{transform:translateY(-140px) rotate(-24deg);opacity:0}
+.qua.mo .hop-qua{animation:none}
+.hop-qua .bat-ra{position:absolute;left:50%;top:60px;font-size:64px;transform:translate(-50%,0) scale(.3);opacity:0;transition:transform .9s .25s cubic-bezier(.2,1.6,.4,1),opacity .4s .25s}
+.qua.mo .bat-ra{transform:translate(-50%,-70px) scale(1);opacity:1}
+.qua .goi-y{margin-top:28px;font-weight:600;color:#b23a57;background:#fff;border-radius:999px;padding:10px 22px;box-shadow:var(--bong);animation:nhun 1.6s ease-in-out infinite}
+.qua .ky{margin-top:14px;font-size:13px;color:#9a5a6a}
+@keyframes lac{0%,100%{transform:rotate(0)}20%{transform:rotate(-4deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(0)}}
 </style>
 </head>
 <body>
@@ -812,6 +832,28 @@ $('#nutDoi').onclick = ()=>{
 taiDanhSachAnh();
 const s = docLuu();
 if (s && ((s.loai==='be' && L.be[s.i] && L.be[s.i].sn) || (s.loai==='co' && L.co[s.id]))){ NGUOI = s; vaoLop(false); }
+/* ================= Link mở quà riêng cho từng cô: ?qua=thao | ?qua=thuy ================= */
+(function(){
+  const id = new URLSearchParams(location.search).get('qua');
+  if (!id || !L.co[id]) return;
+  const m = document.createElement('div'); m.className = 'qua'; m.setAttribute('role','button');
+  m.innerHTML = `<div class="gui">Gửi ${esc(L.co[id].goi.replace('Cô','cô'))} yêu quý</div>
+    <h2>Một món quà nhỏ<br>từ lớp C4</h2>
+    <div class="hop-qua" aria-hidden="true"><div class="than"><div class="ruy"></div></div><div class="nap"><div class="ruy"></div></div><div class="no"></div><div class="bat-ra">💐</div></div>
+    <div class="goi-y">Cô chạm để mở quà 🎁</div>
+    <div class="ky">Nhân ngày Nhà giáo Việt Nam 20/11</div>`;
+  document.body.appendChild(m);
+  let da = false;
+  m.onclick = ()=>{
+    if (da) return; da = true;
+    m.classList.add('mo'); m.querySelector('.goi-y').textContent = 'Cảm ơn cô! 💐';
+    NHAC.bat = true; try{ localStorage.setItem('lop-c4-nhac','bat'); }catch(e){}
+    batNhac(); phaoGiay(120);
+    NGUOI = {loai:'co', id}; luu(NGUOI);
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+    setTimeout(()=>{ vaoLop(false); doiTab('rieng', false, false); m.style.opacity = 0; setTimeout(()=>m.remove(), 700); }, 1900);
+  };
+})();
 </script>
 </body>
 </html>
