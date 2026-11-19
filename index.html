@@ -388,14 +388,15 @@ async function taiDanhSachAnh(){
 // Ảnh thuộc mục "tt" nếu: nằm trong thư mục tên tt (vd anh/trung-thu/, anh/mixue/, anh/12-mixue/)
 // hoặc tên file bắt đầu bằng "tt-" (vd trung-thu-01.jpg, mixue-dai-dien.jpg)
 const thuMucCua = p => { const k = p.split('/'); return k.length>1 ? k[k.length-2].toLowerCase() : ''; };
-const trongThuMuc = (p, tt) => { const m = thuMucCua(p); return m===tt || m.endsWith('-'+tt); };
-const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return trongThuMuc(p,tt) || f.startsWith(tt+'-') || f.replace(DUOI_ANH,'')===tt; }).map(p=>({tep:p, chu:''}));
+const TEN_DA_DUNG = new Set([...L.be.map(b=>b.tenAnh), ...(L.moc||[]).map(m=>m.tenAnh)].filter(Boolean));
+const trongThuMuc = (p, tt) => { const m = thuMucCua(p); return m===tt || (m.endsWith('-'+tt) && !TEN_DA_DUNG.has(m)); };   // 'nh-tue-nhi' là của bạn khác, không tính cho 'tue-nhi'
+const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return trongThuMuc(p,tt) || (f.startsWith(tt+'-') && ![...TEN_DA_DUNG].some(k=>k!==tt && k.startsWith(tt+'-') && f.startsWith(k+'-'))) || f.replace(DUOI_ANH,'')===tt; }).map(p=>({tep:p, chu:''}));
 function gop(...nhom){ const da = new Set(), kq = [];
   nhom.flat().forEach(a=>{ if (a && a.tep && !da.has(a.tep)){ da.add(a.tep); kq.push(a); } }); return kq; }
 function anhDaiDienCua(i){
   const b = L.be[i], dd = chuanAnh(b.anhDaiDien); if (dd && dd.tep) return dd;
   const ds = theoTen(b.tenAnh); if (!ds.length) return null;
-  return ds.find(a=>{ const f = tenFile(a.tep); return f.startsWith(b.tenAnh+'-dai-dien') || (trongThuMuc(a.tep,b.tenAnh) && f.startsWith('dai-dien')); }) || ds[0];
+  return ds.find(a=>{ const f = tenFile(a.tep); return f.startsWith(b.tenAnh+'-dai-dien') || (trongThuMuc(a.tep,b.tenAnh) && f.startsWith('dai-dien')); }) || null;   // chỉ dùng ảnh tên dai-dien, không lấy bừa ảnh đầu tiên
 }
 const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh));
 const anhMoc = m => gop(dsAnh(m.anh), theoTen(m.tenAnh));

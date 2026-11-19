@@ -404,13 +404,6 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ghiChu": "Bố mẹ lớp C4 gặp 2 cô và cùng viết lời chia sẻ cho các con"
   },
   {
-   "ten": "Phụ nữ Việt Nam 20/10",
-   "ngay": "20/10/2026",
-   "ico": "🌷",
-   "anh": [],
-   "tenAnh": "20-10"
-  },
-  {
    "ten": "Một ngày ở lớp mình",
    "ngay": "06/11/2026",
    "ico": "🎨",
