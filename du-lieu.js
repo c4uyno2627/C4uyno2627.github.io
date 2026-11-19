@@ -355,7 +355,7 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
   {"ai": "Bố mẹ bé Đại Nam", "loi": "Con bảo cô là người con thương nhất ở lớp. Cảm ơn 2 cô đã thương con nhiều ạ."},
   {"ai": "Bố mẹ bé Tuệ An", "loi": "Cảm ơn 2 cô cho con những ngày đi học thật vui. Gia đình chúc 2 cô vạn sự như ý ạ!"}
  ],
- "video": "",
+ "video": "video-tri-an-lop-c4.mp4",
  "moc": [
   {
    "ten": "Sinh nhật các bạn tháng 8",

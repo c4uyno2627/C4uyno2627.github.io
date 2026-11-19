@@ -466,6 +466,7 @@ document.addEventListener('click', e=>{
   if (e.target.closest('.nut-nhac')){ NHAC.bat = !NHAC.dangPhat; try{ localStorage.setItem('lop-c4-nhac', NHAC.bat?'bat':'tat'); }catch(x){} NHAC.bat ? batNhac() : tatNhac(); return; }
   if (NHAC.bat && NGUOI && !NHAC.dangPhat) batNhac();   // vào lại trang đã nhớ mã: phát ở lần chạm đầu tiên
 });
+document.addEventListener('play', e=>{ if (e.target.tagName==='VIDEO' && NHAC.dangPhat) tatNhac(); }, true);
 document.addEventListener('visibilitychange', ()=>{ if (document.hidden && NHAC.dangPhat){ tatNhac(); NHAC.tamDung = true; } else if (!document.hidden && NHAC.tamDung){ NHAC.tamDung = false; if (NHAC.bat && NGUOI) batNhac(); } });
 
 /* ================= Lớp phủ + nút Quay lại ================= */
