@@ -201,6 +201,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--la-dam);outline
 .album button{padding:0;display:block;width:100%}
 img.hong{background:repeating-linear-gradient(45deg,var(--kem2),var(--kem2) 8px,#FBE6C6 8px,#FBE6C6 16px);min-height:60px}
 
+audio.giong{width:100%;height:40px;margin:4px 0}
+.dong-giong{padding:8px 0;border-top:1px dashed #eadfcf}.dong-giong:first-of-type{border-top:0}
+.dong-giong b{display:block;font-size:15px;margin-bottom:2px}
 /* ===== Màn mở quà cho cô ===== */
 .mo-qua{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
   background:radial-gradient(circle at 50% 38%,#fff6e0 0,#ffe3e8 45%,#f6c8d4 100%);cursor:pointer;transition:opacity .7s}
@@ -363,6 +366,8 @@ const xoaLuu = () => { try{ localStorage.removeItem(KHOA_LUU); }catch(e){} };
    HOẶC để ảnh trong thư mục cùng tên: anh/trung-thu/, anh/mixue/ (ảnh "dai-dien.jpg" là ảnh đại diện).
    (Công cụ nen-anh.html tự đặt tên đúng.) */
 let ANH_DS = [];
+let AM_DS = [];   // ghi âm giọng các con: anh/<tenAnh>/*.m4a|mp3|aac
+const DUOI_AM = /\.(m4a|mp3|aac|wav|ogg)$/i;
 const DUOI_ANH = /\.(jpe?g|png|webp|gif|avif)$/i;
 const soSanhTen = (a,b) => a.localeCompare(b, 'vi', {numeric:true});
 const tenFile = p => p.slice(p.lastIndexOf('/')+1).toLowerCase();
@@ -373,15 +378,17 @@ function khoRepo(){
   return { chu: h.split('.')[0], repo: (doan.length && !/\.html?$/.test(doan[0])) ? doan[0] : h };
 }
 async function taiDanhSachAnh(){
-  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh2')); if (c && c.ds) ANH_DS = c.ds; }catch(e){}
+  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh2')); if (c && c.ds){ ANH_DS = c.ds; AM_DS = c.am || []; } }catch(e){}
   const kho = khoRepo(); if (!kho) return;
   try{
     const r = await fetch(`https://api.github.com/repos/${kho.chu}/${kho.repo}/git/trees/HEAD?recursive=1`);
     if (!r.ok) return;
-    const ds = (await r.json()).tree.filter(x=>x.type==='blob' && DUOI_ANH.test(x.path) && x.path!=='og.png').map(x=>x.path).sort((a,b)=>soSanhTen(tenFile(a),tenFile(b)));
-    const doi = JSON.stringify(ds) !== JSON.stringify(ANH_DS);
-    ANH_DS = ds;
-    try{ localStorage.setItem('lop-c4-anh2', JSON.stringify({t:Date.now(), ds})); }catch(e){}
+    const cay = (await r.json()).tree.filter(x=>x.type==='blob');
+    const ds = cay.filter(x=>DUOI_ANH.test(x.path) && x.path!=='og.png').map(x=>x.path).sort((a,b)=>soSanhTen(tenFile(a),tenFile(b)));
+    const am = cay.filter(x=>DUOI_AM.test(x.path) && x.path.startsWith('anh/')).map(x=>x.path).sort((a,b)=>soSanhTen(tenFile(a),tenFile(b)));
+    const doi = JSON.stringify(ds) !== JSON.stringify(ANH_DS) || JSON.stringify(am) !== JSON.stringify(AM_DS);
+    ANH_DS = ds; AM_DS = am;
+    try{ localStorage.setItem('lop-c4-anh2', JSON.stringify({t:Date.now(), ds, am})); }catch(e){}
     if (doi && NGUOI) doiTab(TAB, false, false);
   }catch(e){}
 }
@@ -391,6 +398,8 @@ const thuMucCua = p => { const k = p.split('/'); return k.length>1 ? k[k.length-
 const TEN_DA_DUNG = new Set([...L.be.map(b=>b.tenAnh), ...(L.moc||[]).map(m=>m.tenAnh)].filter(Boolean));
 const trongThuMuc = (p, tt) => { const m = thuMucCua(p); return m===tt || (m.endsWith('-'+tt) && !TEN_DA_DUNG.has(m)); };   // 'nh-tue-nhi' là của bạn khác, không tính cho 'tue-nhi'
 const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return trongThuMuc(p,tt) || (f.startsWith(tt+'-') && ![...TEN_DA_DUNG].some(k=>k!==tt && k.startsWith(tt+'-') && f.startsWith(k+'-'))) || f.replace(DUOI_ANH,'')===tt; }).map(p=>({tep:p, chu:''}));
+const giongCua = i => { const tt = L.be[i].tenAnh; return !tt ? [] : AM_DS.filter(p=>trongThuMuc(p,tt) || tenFile(p).startsWith(tt+'-')); };
+const theGiong = p => `<audio class="giong" src="${esc(p)}" controls preload="none"></audio>`;
 function gop(...nhom){ const da = new Set(), kq = [];
   nhom.flat().forEach(a=>{ if (a && a.tep && !da.has(a.tep)){ da.add(a.tep); kq.push(a); } }); return kq; }
 function anhDaiDienCua(i){
@@ -398,7 +407,7 @@ function anhDaiDienCua(i){
   const ds = theoTen(b.tenAnh); if (!ds.length) return null;
   return ds.find(a=>{ const f = tenFile(a.tep); return f.startsWith(b.tenAnh+'-dai-dien') || (trongThuMuc(a.tep,b.tenAnh) && f.startsWith('dai-dien')); }) || null;   // chỉ dùng ảnh tên dai-dien, không lấy bừa ảnh đầu tiên
 }
-const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh));
+const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh).filter(a=>!/^([a-z0-9-]+-)?dai-dien/.test(tenFile(a.tep))));   // ảnh đại diện (đã cắt vuông) không lặp lại trong album
 const anhMoc = m => gop(dsAnh(m.anh), theoTen(m.tenAnh));
 const anhLopCo = () => chuanAnh(L.anhCoVoiLop) && chuanAnh(L.anhCoVoiLop).tep ? chuanAnh(L.anhCoVoiLop) : theoTen('co-voi-lop')[0] || null;
 const anhCuaCo = () => gop(dsAnh(L.anhCo), theoTen('co-voi-lop'));
@@ -451,7 +460,7 @@ async function coFileNhac(){
   return NHAC.coFile;
 }
 async function batNhac(){
-  if (NHAC.dangPhat) return;
+  if (NHAC.dangPhat || NHAC.dangXemVideo) return;   // đang xem video thì không chen nhạc nền
   NHAC.dangPhat = true; capNhatNutNhac();
   if (await coFileNhac()){
     if (!NHAC.audio){
@@ -467,7 +476,15 @@ document.addEventListener('click', e=>{
   if (e.target.closest('.nut-nhac')){ NHAC.bat = !NHAC.dangPhat; try{ localStorage.setItem('lop-c4-nhac', NHAC.bat?'bat':'tat'); }catch(x){} NHAC.bat ? batNhac() : tatNhac(); return; }
   if (NHAC.bat && NGUOI && !NHAC.dangPhat) batNhac();   // vào lại trang đã nhớ mã: phát ở lần chạm đầu tiên
 });
-document.addEventListener('play', e=>{ if (e.target.tagName==='VIDEO' && NHAC.dangPhat) tatNhac(); }, true);
+// Video phát → tắt nhạc nền; video dừng/hết → bật lại nhạc nền (nếu người xem đang để chế độ có nhạc)
+document.addEventListener('play', e=>{ if (e.target.tagName==='VIDEO' || e.target.tagName==='AUDIO'){
+  document.querySelectorAll('video,audio').forEach(m=>{ if (m!==e.target && !m.paused) m.pause(); });   // mỗi lúc chỉ một tiếng
+  NHAC.dangXemVideo = true; if (NHAC.dangPhat) tatNhac(); } }, true);
+['pause','ended'].forEach(ev=>document.addEventListener(ev, e=>{
+  if (e.target.tagName!=='VIDEO' && e.target.tagName!=='AUDIO') return;
+  NHAC.dangXemVideo = [...document.querySelectorAll('video,audio')].some(v=>!v.paused && !v.ended);
+  if (!NHAC.dangXemVideo && NHAC.bat && NGUOI && !document.hidden) batNhac();
+}, true));
 document.addEventListener('visibilitychange', ()=>{ if (document.hidden && NHAC.dangPhat){ tatNhac(); NHAC.tamDung = true; } else if (!document.hidden && NHAC.tamDung){ NHAC.tamDung = false; if (NHAC.bat && NGUOI) batNhac(); } });
 
 /* ================= Lớp phủ + nút Quay lại ================= */
@@ -688,6 +705,7 @@ function vaoLop(moi){
 let TAB = 'vuon';
 function doiTab(t, ghi=true, cuon=true){
   TAB = t;
+  if (NHAC.dangXemVideo){ NHAC.dangXemVideo = false; if (NHAC.bat && NGUOI) setTimeout(batNhac, 0); }   // rời tab có video đang phát
   if (ghi) try{ history.pushState({tab:t}, ''); }catch(e){}
   document.querySelectorAll('.thanh-duoi button').forEach(b=>b.classList.toggle('dang', b.dataset.tab===t));
   ALBUM.length = 0;
@@ -771,7 +789,9 @@ function trangTriAn(){
     <div class="the giay-thu"><div class="thu">${esc(L.thuTriAn)}<span class="ky">Hội Cha mẹ học sinh lớp C4</span></div></div>
     ${theLoiCamOn()}
     ${ke}
-    ${L.video ? `<div class="the"><div class="tieu-de tieu">🎥 Chúng con yêu cô</div>${videoHTML(L.video)}</div>` : ''}`;
+    ${L.video ? `<div class="the"><div class="tieu-de tieu">🎥 Chúng con yêu cô</div>${videoHTML(L.video)}</div>` : ''}
+    ${(()=>{ const co = L.be.map((b,i)=>({b, g:giongCua(i)})).filter(x=>x.g.length);
+      return co.length ? `<div class="the"><div class="tieu-de tieu">🎙️ Các con nói với cô</div>${co.map(x=>`<div class="dong-giong"><b>${esc(x.b.goi)}</b>${x.g.map(theGiong).join('')}</div>`).join('')}</div>` : ''; })()}`;
 }
 
 function trangNamHoc(){
@@ -811,6 +831,7 @@ function trangRieng(){
       ${b.chuyenTruong?`<div class="the" style="text-align:center;background:#EEF6FF"><div style="font-size:36px">✈️</div><b class="tieu" style="font-size:20px">Con đã sang trường mới từ ${b.chuyenTruong}</b><p class="nho-xam" style="margin:4px 0 0">Cô và các bạn lớp C4 luôn nhớ con. Chúc con học thật vui ở trường mới!</p></div>`:''}
       ${snHTML}
       ${cungNgay.length?`<div class="the" style="text-align:center">🎈 ${esc(b.goi)} có ${cungNgay.length} bạn sinh cùng ngày: <b>${esc(cungNgay.join(', '))}</b></div>`:''}
+      ${giongCua(i).length?`<div class="the"><div class="tieu-de tieu">🎙️ Giọng của ${esc(b.goi)}</div><p class="nho-xam" style="margin:0 0 8px">Ghi lại năm học ${esc(L.lop.namHoc)}</p>${giongCua(i).map(theGiong).join('')}</div>`:''}
       ${b.loiBoMe?`<div class="the"><div class="tieu-de tieu">🏡 Bố mẹ viết cho con</div><div class="loi-bo-me">${esc(b.loiBoMe)}</div></div>`:''}
       <div class="the"><div class="tieu-de tieu">📷 Ảnh của ${esc(b.goi)}</div>
         ${ds.length ? album(ds, 12) : `<p class="nho-xam">Ảnh của ${esc(b.goi)} sẽ được cập nhật 🌱</p>`}</div>`;
