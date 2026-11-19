@@ -378,7 +378,7 @@ function khoRepo(){
   return { chu: h.split('.')[0], repo: (doan.length && !/\.html?$/.test(doan[0])) ? doan[0] : h };
 }
 async function taiDanhSachAnh(){
-  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh2')); if (c && c.ds){ ANH_DS = c.ds; AM_DS = c.am || []; } }catch(e){}
+  try{ const c = JSON.parse(localStorage.getItem('lop-c4-anh2')); if (c && c.ds){ ANH_DS = c.ds; AM_DS = c.am || []; veCayCong(); } }catch(e){}
   const kho = khoRepo(); if (!kho) return;
   try{
     const r = await fetch(`https://api.github.com/repos/${kho.chu}/${kho.repo}/git/trees/HEAD?recursive=1`);
@@ -389,7 +389,7 @@ async function taiDanhSachAnh(){
     const doi = JSON.stringify(ds) !== JSON.stringify(ANH_DS) || JSON.stringify(am) !== JSON.stringify(AM_DS);
     ANH_DS = ds; AM_DS = am;
     try{ localStorage.setItem('lop-c4-anh2', JSON.stringify({t:Date.now(), ds, am})); }catch(e){}
-    if (doi && NGUOI) doiTab(TAB, false, false);
+    if (doi){ veCayCong(); if (NGUOI) doiTab(TAB, false, false); }
   }catch(e){}
 }
 // Ảnh thuộc mục "tt" nếu: nằm trong thư mục tên tt (vd anh/trung-thu/, anh/mixue/, anh/12-mixue/)
@@ -398,6 +398,10 @@ const thuMucCua = p => { const k = p.split('/'); return k.length>1 ? k[k.length-
 const TEN_DA_DUNG = new Set([...L.be.map(b=>b.tenAnh), ...(L.moc||[]).map(m=>m.tenAnh)].filter(Boolean));
 const trongThuMuc = (p, tt) => { const m = thuMucCua(p); return m===tt || (m.endsWith('-'+tt) && !TEN_DA_DUNG.has(m)); };   // 'nh-tue-nhi' là của bạn khác, không tính cho 'tue-nhi'
 const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return trongThuMuc(p,tt) || (f.startsWith(tt+'-') && ![...TEN_DA_DUNG].some(k=>k!==tt && k.startsWith(tt+'-') && f.startsWith(k+'-'))) || f.replace(DUOI_ANH,'')===tt; }).map(p=>({tep:p, chu:''}));
+// Ảnh nhỏ (160px) cho cây ở trang đầu: anh/nho/nho-<tenAnh>.jpg; chưa có thì dùng ảnh đại diện gốc
+const anhNhoCua = i => { const tt = L.be[i].tenAnh, p = tt && `anh/nho/nho-${tt}.jpg`;
+  if (p && ANH_DS.includes(p)) return p; const dd = anhDaiDienCua(i); return dd && dd.tep ? dd.tep : null; };
+const hinhCay = i => { const p = anhNhoCua(i); return p ? `<img class="anh-tron" src="${esc(p)}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(svgHoa(${i})))">` : svgHoa(i); };
 const giongCua = i => { const tt = L.be[i].tenAnh; return !tt ? [] : AM_DS.filter(p=>trongThuMuc(p,tt) || tenFile(p).startsWith(tt+'-')); };
 const theGiong = p => `<audio class="giong" src="${esc(p)}" controls preload="none"></audio>`;
 function gop(...nhom){ const da = new Set(), kq = [];
@@ -569,7 +573,7 @@ function vuaKhung(){ document.querySelectorAll('.tan').forEach(tan=>{
 function veCayCong(){
   setTimeout(vuaKhung, 0);
   $('#luoiCong').innerHTML = veTan(i=>{ const b = L.be[i];
-    return `<button class="hoa ${b.sn?'':'cho'}" data-i="${i}" aria-label="${esc(b.goi)}">${svgHoa(i)}${b.chuyenTruong?'<span class="may-bay">✈️</span>':''}${nhanTen(b)}</button>`; });
+    return `<button class="hoa ${b.sn?'':'cho'}" data-i="${i}" aria-label="${esc(b.goi)}">${hinhCay(i)}${b.chuyenTruong?'<span class="may-bay">✈️</span>':''}${nhanTen(b)}</button>`; });
 }
 let MAU_HIEN = '';
 let hen; window.addEventListener('resize', ()=>{ clearTimeout(hen); hen = setTimeout(()=>{
@@ -620,7 +624,7 @@ function thongBao(tieuDe, moTa, hinh='🌱'){
 function chonBe(i){
   const b = L.be[i];
   if (!b.sn) return thongBao(`Bạn ${esc(b.goi)} 🌱`, 'Lớp đang cập nhật thông tin của con, bố mẹ quay lại sau ít hôm nhé.');
-  moHop({ tieuDe:`Bạn ${esc(b.goi)}`, moTa:'Bố mẹ nhập <b>ngày và tháng sinh</b> của con (4 số)', hinh:svgHoa(i), nguoi:{loai:'be', i} });
+  moHop({ tieuDe:`Bạn ${esc(b.goi)}`, moTa:'Bố mẹ nhập <b>ngày và tháng sinh</b> của con (4 số)', hinh:(anhNhoCua(i) ? `<img class="anh-tron" style="width:84px;height:84px;border-width:4px" src="${esc(anhNhoCua(i))}" alt="">` : svgHoa(i)), nguoi:{loai:'be', i} });
 }
 function chonCo(id){
   moHop({ tieuDe:`Chào ${esc(L.co[id].goi)}`, moTa:'Cô nhập mã trên tấm thiệp nhé', hinh:svgCo(72), nguoi:{loai:'co', id} });
@@ -716,7 +720,7 @@ function doiTab(t, ghi=true, cuon=true){
 }
 function banTrongLop(i){
   const b = L.be[i], dd = anhDaiDienCua(i);
-  const hinh = dd && dd.tep ? theAnh(dd,'anh-tron') : svgHoa(i);
+  const hinh = hinhCay(i);
   return `<button class="hoa ${cacBeCuaToi().includes(i)?'cua-toi':''}" data-xem="${i}">${hinh}${b.chuyenTruong?'<span class="may-bay">✈️</span>':''}${nhanTen(b)}</button>`;
 }
 document.addEventListener('click', e=>{
