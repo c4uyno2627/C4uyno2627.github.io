@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Nén ảnh trước khi tải lên · Lớp C4</title>
+<style>
+:root{--la:#7BB661;--la-dam:#4F8A3C;--kem:#FFF8EC;--chu:#4A3B2C;--nhat:#8A7663}
+*{box-sizing:border-box}
+body{margin:0;background:var(--kem);color:var(--chu);font:16px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 60px}
+h1{color:var(--la-dam);margin:0 0 4px;font-size:28px}
+p{margin:6px 0}
+.nhat{color:var(--nhat);font-size:14px}
+fieldset{border:2px solid #EADCC4;border-radius:16px;margin:18px 0 0;padding:12px 16px;background:#fff}
+legend{font-weight:700;padding:0 6px}
+label.chon{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
+label.chon input{margin-top:5px}
+.nut{display:inline-block;background:var(--la);color:#fff;font-weight:700;border:0;border-radius:999px;padding:12px 22px;font-size:16px;cursor:pointer;box-shadow:0 3px 0 var(--la-dam)}
+.nut:disabled{opacity:.5;cursor:default}
+.nut.phu{background:#fff;color:var(--la-dam);box-shadow:inset 0 0 0 2px var(--la)}
+.hang-nut{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+#luoi{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:18px}
+.o{background:#fff;border-radius:12px;padding:8px;font-size:13px;border:1px solid #F3E8D6}
+.o img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;background:#f3ecdf}
+.o .ten{word-break:break-all;margin-top:6px}
+.o .co{color:var(--la-dam);font-weight:600}
+.o .loi{color:#C0504F}
+button:focus-visible,input:focus-visible{outline:3px solid var(--la-dam);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Nén ảnh trước khi tải lên</h1>
+  <p>Ảnh chụp từ điện thoại thường nặng 2–5 MB. Nén lại thì trang lớp mở nhanh hơn, phụ huynh đỡ tốn dung lượng 4G.</p>
+  <p class="nhat">Ảnh chỉ được xử lý ngay trên máy anh, không gửi đi đâu cả.</p>
+
+  <fieldset>
+    <legend>Loại ảnh</legend>
+    <label class="chon"><input type="radio" name="kieu" value="album" checked>
+      <span><b>Ảnh album</b> (các dịp, ảnh riêng của bé, ảnh cô với lớp)<br><span class="nhat">Thu cạnh dài nhất về 1600px, giữ nguyên khung ảnh.</span></span></label>
+    <label class="chon"><input type="radio" name="kieu" value="daidien">
+      <span><b>Ảnh đại diện của bé</b><br><span class="nhat">Cắt vuông (lệch lên trên một chút để giữ khuôn mặt), cỡ 480px, đặt tên <code>dai-dien.jpg</code>.</span></span></label>
+  </fieldset>
+
+  <div class="hang-nut">
+    <label class="nut" for="tep">Chọn ảnh…</label>
+    <input id="tep" type="file" accept="image/*" multiple hidden>
+    <button class="nut phu" id="taiHet" disabled>Tải tất cả ảnh đã nén</button>
+  </div>
+  <p class="nhat" id="tomTat"></p>
+  <div id="luoi"></div>
+
+  <fieldset>
+    <legend>Sau khi nén</legend>
+    <p>1. Các ảnh nén nằm trong thư mục <b>Tải về</b> (Downloads) của máy.</p>
+    <p>2. Lên GitHub, mở đúng thư mục (ví dụ <code>anh/trung-thu</code> hoặc <code>anh/be/12-mixue</code>), chọn <b>Add file → Upload files</b>, kéo ảnh vào rồi bấm <b>Commit changes</b>.</p>
+    <p class="nhat">Ảnh HEIC của iPhone: nếu không mở được ở đây thì mở trang này bằng Safari, hoặc đổi sang JPG trước.</p>
+  </fieldset>
+</main>
+<script>
+const KET_QUA = [];
+const $ = s => document.querySelector(s);
+const kb = n => n > 1048576 ? (n/1048576).toFixed(1)+' MB' : Math.round(n/1024)+' KB';
+const tenGoc = f => f.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D')
+  .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'anh';
+
+async function docAnh(f){
+  try{ return await createImageBitmap(f, {imageOrientation:'from-image'}); }
+  catch(e){
+    const url = URL.createObjectURL(f);
+    try{ const img = new Image(); img.src = url; await img.decode(); return img; }
+    finally{ setTimeout(()=>URL.revokeObjectURL(url), 1000); }
+  }
+}
+async function nen(f, kieu){
+  const a = await docAnh(f);
+  const w = a.width, h = a.height, c = document.createElement('canvas'), g = c.getContext('2d');
+  if (kieu === 'daidien'){
+    const canh = Math.min(w, h), S = 480;
+    const sx = (w - canh)/2, sy = Math.max(0, Math.min(h - canh, (h - canh)*0.35));
+    c.width = c.height = S;
+    g.drawImage(a, sx, sy, canh, canh, 0, 0, S, S);
+  } else {
+    const k = Math.min(1, 1600/Math.max(w, h));
+    c.width = Math.round(w*k); c.height = Math.round(h*k);
+    g.drawImage(a, 0, 0, c.width, c.height);
+  }
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+}
+
+$('#tep').addEventListener('change', async e=>{
+  const ds = [...e.target.files]; if (!ds.length) return;
+  const kieu = document.querySelector('input[name=kieu]:checked').value;
+  KET_QUA.length = 0; $('#luoi').innerHTML = ''; $('#taiHet').disabled = true;
+  let truoc = 0, sau = 0;
+  for (let k=0; k<ds.length; k++){
+    const f = ds[k], o = document.createElement('div'); o.className = 'o';
+    o.innerHTML = `<img alt=""><div class="ten">${f.name}</div><div class="nhat">Đang nén…</div>`;
+    $('#luoi').appendChild(o);
+    try{
+      const b = await nen(f, kieu);
+      const ten = kieu==='daidien' ? (ds.length===1 ? 'dai-dien.jpg' : `dai-dien-${tenGoc(f)}.jpg`) : `${tenGoc(f)}.jpg`;
+      KET_QUA.push({b, ten}); truoc += f.size; sau += b.size;
+      o.querySelector('img').src = URL.createObjectURL(b);
+      o.querySelector('.ten').textContent = ten;
+      o.querySelector('.nhat').outerHTML = `<div class="co">${kb(f.size)} → ${kb(b.size)}</div>`;
+    }catch(err){
+      o.querySelector('.nhat').outerHTML = '<div class="loi">Không đọc được ảnh này</div>';
+    }
+  }
+  $('#tomTat').textContent = KET_QUA.length ? `Đã nén ${KET_QUA.length} ảnh: ${kb(truoc)} → ${kb(sau)}` : '';
+  $('#taiHet').disabled = !KET_QUA.length;
+  e.target.value = '';
+});
+$('#taiHet').addEventListener('click', async ()=>{
+  for (const {b, ten} of KET_QUA){
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = ten;
+    document.body.appendChild(a); a.click(); a.remove();
+    await new Promise(r=>setTimeout(r, 350));
+  }
+});
+</script>
+</body>
+</html>
