@@ -204,6 +204,12 @@ img.hong{background:repeating-linear-gradient(45deg,var(--kem2),var(--kem2) 8px,
 audio.giong{width:100%;height:40px;margin:4px 0}
 .dong-giong{padding:8px 0;border-top:1px dashed #eadfcf}.dong-giong:first-of-type{border-top:0}
 .dong-giong b{display:block;font-size:15px;margin-bottom:2px}
+.dem-ngay{display:flex;align-items:center;justify-content:center;gap:10px;text-align:left}
+.dem-ngay .so{font-family:'Baloo 2',cursive;font-size:44px;font-weight:800;color:var(--la-dam);line-height:1}
+.cau-noi{font-size:17px;font-style:italic;padding:8px 12px;margin:6px 0;background:var(--kem);border-left:4px solid var(--nang);border-radius:8px}
+.thu-khoa{text-align:center}.thu-khoa .phong-bi{font-size:44px}
+.sap-co{background:#F4FAEE;border:1.5px dashed var(--la)}.sap-co p{margin:6px 0}
+a.nut{display:inline-block;text-decoration:none;margin-top:10px}
 /* ===== Màn mở quà cho cô ===== */
 .mo-qua{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
   background:radial-gradient(circle at 50% 38%,#fff6e0 0,#ffe3e8 45%,#f6c8d4 100%);cursor:pointer;transition:opacity .7s}
@@ -833,12 +839,23 @@ function trangRieng(){
     return `
       <div class="the chao-lon" style="text-align:center">${anhDD}<h2 style="margin-top:6px">Góc của ${esc(b.goi)}</h2><p class="nho-xam">${esc(b.ten)}</p></div>
       ${b.chuyenTruong?`<div class="the" style="text-align:center;background:#EEF6FF"><div style="font-size:36px">✈️</div><b class="tieu" style="font-size:20px">Con đã sang trường mới từ ${b.chuyenTruong}</b><p class="nho-xam" style="margin:4px 0 0">Cô và các bạn lớp C4 luôn nhớ con. Chúc con học thật vui ở trường mới!</p></div>`:''}
+      ${(()=>{ const bd = b.vaoLop ? pdVN(b.vaoLop) : pd(L.lop.khaiGiang), kt = b.chuyenTruong ? pdVN(b.chuyenTruong) : HN, n = soNgay(bd, kt);
+        return n>0 ? `<div class="the dem-ngay"><span class="so">${n}</span><span>ngày ${esc(b.goi)} đã cùng lớp C4${b.chuyenTruong?'':' 🌱'}</span></div>` : ''; })()}
       ${snHTML}
       ${cungNgay.length?`<div class="the" style="text-align:center">🎈 ${esc(b.goi)} có ${cungNgay.length} bạn sinh cùng ngày: <b>${esc(cungNgay.join(', '))}</b></div>`:''}
       ${giongCua(i).length?`<div class="the"><div class="tieu-de tieu">🎙️ Giọng của ${esc(b.goi)}</div><p class="nho-xam" style="margin:0 0 8px">Ghi lại năm học ${esc(L.lop.namHoc)}</p>${giongCua(i).map(theGiong).join('')}</div>`:''}
+      ${b.cauNoi?`<div class="the"><div class="tieu-de tieu">💬 ${esc(b.goi)} nói thế đấy</div>${[].concat(b.cauNoi).map(c=>`<div class="cau-noi">“${esc(c)}”</div>`).join('')}</div>`:''}
+      ${b.thuGuiCon?(HN>=pd(L.lop.tongKet)
+        ? `<div class="the"><div class="tieu-de tieu">💌 Thư bố mẹ gửi con</div><div class="loi-bo-me">${esc(b.thuGuiCon)}</div></div>`
+        : `<div class="the thu-khoa"><div class="phong-bi">💌</div><b>Bố mẹ có một lá thư gửi ${esc(b.goi)}</b><div class="nho-xam">Thư sẽ mở vào ngày tổng kết năm học (${esc(L.lop.tongKet.split('-').reverse().join('/'))})</div></div>`):''}
       ${b.loiBoMe?`<div class="the"><div class="tieu-de tieu">🏡 Bố mẹ viết cho con</div><div class="loi-bo-me">${esc(b.loiBoMe)}</div></div>`:''}
       <div class="the"><div class="tieu-de tieu">📷 Ảnh của ${esc(b.goi)}</div>
-        ${ds.length ? album(ds, 12) : `<p class="nho-xam">Ảnh của ${esc(b.goi)} sẽ được cập nhật 🌱</p>`}</div>`;
+        ${ds.length ? album(ds, 12) : `<p class="nho-xam">Ảnh của ${esc(b.goi)} sẽ được cập nhật 🌱</p>`}</div>
+      <div class="the the-tai" style="text-align:center"><div class="tieu-de tieu" style="justify-content:center">🎫 Thẻ bạn nhỏ lớp C4</div>
+        <p class="nho-xam" style="margin:0 0 10px">Thẻ riêng của ${esc(b.goi)}, tải về giữ làm kỷ niệm nhé</p>
+        <div class="xem-the" data-the="${i}"></div><button class="nut nut-the" data-the="${i}">Xem và tải thẻ</button></div>
+      ${(()=>{ const thieu = [!giongCua(i).length && '🎙️ giọng nói của con', !b.cauNoi && '💬 những câu con nói ngộ nghĩnh', !b.thuGuiCon && '💌 lá thư bố mẹ gửi con, mở vào ngày tổng kết'].filter(Boolean);
+        return thieu.length ? `<div class="the sap-co"><b>🌱 Góc của ${esc(b.goi)} sẽ còn thêm</b><p>${thieu.join(', ')}.</p><p class="nho-xam" style="margin:0">Bố mẹ gửi cho ban đại diện lúc nào tiện nhé.</p></div>` : ''; })()}`;
   }).join('');
 }
 
@@ -881,6 +898,50 @@ if (s && ((s.loai==='be' && L.be[s.i] && L.be[s.i].sn) || (s.loai==='co' && L.co
     setTimeout(()=>{ vaoLop(false); doiTab('rieng', false, false); m.style.opacity = 0; setTimeout(()=>m.remove(), 700); }, 1900);
   };
 })();
+/* ================= Thẻ "Bạn nhỏ lớp C4" (vẽ bằng canvas, tải về PNG) ================= */
+const taiAnh = src => new Promise((ok, loi)=>{ const im = new Image(); im.onload = ()=>ok(im); im.onerror = loi; im.src = src; });
+async function veThe(i){
+  const b = L.be[i], W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d');
+  try{ await document.fonts.ready; }catch(e){}
+  const F = (w, s, f) => `${w} ${s}px ${f}`;
+  // nền
+  const nen = g.createLinearGradient(0,0,0,H); nen.addColorStop(0,'#E8F5DC'); nen.addColorStop(1,'#FFF8EC'); g.fillStyle = nen; g.fillRect(0,0,W,H);
+  const hoaNho = (x,y,r,mau)=>{ g.fillStyle = mau; for (let k=0;k<5;k++){ const a = k*Math.PI*2/5; g.beginPath(); g.arc(x+Math.cos(a)*r*.6, y+Math.sin(a)*r*.6, r*.45, 0, 7); g.fill(); } g.fillStyle='#FFE08A'; g.beginPath(); g.arc(x,y,r*.32,0,7); g.fill(); };
+  [[90,110,38,'#F7A8B4'],[990,150,30,'#FFD166'],[120,1230,32,'#B8A9F0'],[960,1220,40,'#8FD3E8'],[70,650,22,'#FFB077'],[1010,700,24,'#A0D995']].forEach(h=>hoaNho(...h));
+  // thẻ trắng
+  const r = (x,y,w,h,rr)=>{ g.beginPath(); g.moveTo(x+rr,y); g.arcTo(x+w,y,x+w,y+h,rr); g.arcTo(x+w,y+h,x,y+h,rr); g.arcTo(x,y+h,x,y,rr); g.arcTo(x,y,x+w,y,rr); g.closePath(); };
+  g.save(); g.shadowColor='rgba(120,80,40,.18)'; g.shadowBlur=40; g.shadowOffsetY=12; g.fillStyle='#fff'; r(110,170,860,1010,56); g.fill(); g.restore();
+  g.fillStyle='#4F8A3C'; r(110,170,860,150,56); g.fill(); g.fillRect(110,260,860,60);
+  g.textAlign='center'; g.fillStyle='#fff'; g.font=F(800,64,"'Baloo 2', system-ui"); g.fillText('Bạn nhỏ lớp C4', W/2, 262);
+  // ảnh tròn
+  const cx = W/2, cy = 600, R = 230;
+  g.fillStyle='#CFE8B8'; g.beginPath(); g.arc(cx,cy,R+22,0,7); g.fill();
+  const p = anhNhoCua(i) && anhDaiDienCua(i) ? anhDaiDienCua(i).tep : null;
+  try{
+    const im = p ? await taiAnh(p) : await taiAnh('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgHoa(i).replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"')));
+    g.save(); g.beginPath(); g.arc(cx,cy,R,0,7); g.clip(); g.fillStyle='#FFF8EC'; g.fillRect(cx-R,cy-R,2*R,2*R);
+    if (p){ const s = Math.max(2*R/im.width, 2*R/im.height); g.drawImage(im, cx-im.width*s/2, cy-im.height*s/2, im.width*s, im.height*s); }
+    else g.drawImage(im, cx-R*.8, cy-R*.8, R*1.6, R*1.6);
+    g.restore();
+  }catch(e){}
+  g.lineWidth=12; g.strokeStyle='#fff'; g.beginPath(); g.arc(cx,cy,R,0,7); g.stroke();
+  // chữ
+  g.fillStyle='#4A3B2C'; g.font=F(800,108,"'Baloo 2', system-ui"); g.fillText(b.goi, cx, 950);
+  g.fillStyle='#8A7663'; g.font=F(500,40,"'Be Vietnam Pro', system-ui"); g.fillText(b.ten, cx, 1010);
+  g.fillStyle='#E46C86'; g.font=F(600,40,"'Be Vietnam Pro', system-ui"); g.fillText(`🎂 Sinh ngày ${b.sn}`, cx, 1080);
+  g.fillStyle='#4F8A3C'; g.font=F(600,34,"'Be Vietnam Pro', system-ui"); g.fillText(`Mẫu giáo bé C4 · MN Uy Nỗ · ${L.lop.namHoc}`, cx, 1140);
+  g.fillStyle='#8A7663'; g.font=F(500,30,"'Be Vietnam Pro', system-ui"); g.fillText('c4uyno2627.github.io', cx, 1290);
+  return c;
+}
+document.addEventListener('click', async e=>{
+  const nut = e.target.closest('.nut-the'); if (!nut) return;
+  const i = +nut.dataset.the, o = document.querySelector(`.xem-the[data-the="${i}"]`); nut.disabled = true; nut.textContent = 'Đang làm thẻ…';
+  try{
+    const c = await veThe(i), url = c.toDataURL('image/png'), ten = `the-lop-c4-${L.be[i].tenAnh||i}.png`;
+    o.innerHTML = `<img src="${url}" alt="Thẻ bạn nhỏ lớp C4" style="width:100%;max-width:360px;border-radius:18px;box-shadow:var(--bong)"><p class="nho-xam" style="margin:6px 0 0">Trên điện thoại: chạm giữ vào thẻ để lưu ảnh</p>`;
+    nut.outerHTML = `<a class="nut" href="${url}" download="${ten}">Tải thẻ về máy</a>`;
+  }catch(err){ nut.disabled = false; nut.textContent = 'Thử lại'; }
+});
 </script>
 </body>
 </html>
