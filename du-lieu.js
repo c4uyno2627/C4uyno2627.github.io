@@ -347,6 +347,29 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "tenAnh": "20-10"
   },
   {
+   "ten": "Một ngày ở lớp mình",
+   "ngay": "06/11/2026",
+   "ico": "🎨",
+   "anh": [],
+   "tenAnh": "mot-ngay-o-lop",
+   "ghiChu": "Học vẽ, tô màu, nghe kể chuyện và chơi ngoài sân"
+  },
+  {
+   "ten": "Sinh nhật các bạn tháng 11",
+   "ngay": "12/11/2026",
+   "ico": "🎂",
+   "anh": [],
+   "tenAnh": "sinh-nhat-thang-11"
+  },
+  {
+   "ten": "Ngày hội Sắc màu văn hóa Việt",
+   "ngay": "17/11/2026",
+   "ico": "🎎",
+   "anh": [],
+   "tenAnh": "sac-mau-van-hoa-viet",
+   "ghiChu": "Các con mặc áo dài, cắm hoa, vẽ tranh, chơi nhảy bao bố"
+  },
+  {
    "ten": "Tạm biệt bạn Nam Khánh",
    "ngay": "18/11/2026",
    "ico": "✈️",
