@@ -379,7 +379,7 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ico": "🎒",
    "anh": [],
    "tenAnh": "khai-giang",
-   "ghiChu": "Năm học đầu tiên của lớp C4 bắt đầu, 2 cô mặc áo dài đỏ đón các con"
+   "ghiChu": "Năm học mới bắt đầu, 2 cô mặc áo dài đỏ đón các con vào lớp C4"
   },
   {
    "ten": "Tết Trung thu",
