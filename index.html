@@ -96,6 +96,11 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 /* ===== Nội dung chính ===== */
 .thanh-tren{display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px}
 .thanh-tren .logo{font-family:'Baloo 2','Be Vietnam Pro',sans-serif;font-weight:800;font-size:20px;color:var(--la-dam)}
+.nut-nhac{width:34px;height:34px;padding:0!important;display:flex;align-items:center;justify-content:center;font-size:16px!important;background:#fff;border-radius:50%;box-shadow:var(--bong)}
+#cong{position:relative}
+.nhac-cong{position:absolute;top:12px;right:12px;z-index:5}
+.nut-nhac.dang-phat{animation:nhun 1.6s ease-in-out infinite}
+@keyframes nhun{50%{transform:scale(1.08)}}
 .thanh-tren button{font-size:13px;color:var(--chu-nhat);background:#fff;padding:6px 12px;border-radius:999px;box-shadow:var(--bong)}
 .the{background:#fff;border-radius:22px;padding:18px;box-shadow:0 2px 0 #EADCC4;border:1px solid #F3E8D6;margin-top:16px}
 .chao-lon h2{font-size:30px;color:var(--la-dam)}
@@ -206,6 +211,7 @@ img.hong{background:repeating-linear-gradient(45deg,var(--kem2),var(--kem2) 8px,
 
 <!-- ============ CỔNG VÀO ============ -->
 <section id="cong" class="khung">
+  <button class="nut-nhac nhac-cong" aria-label="Bật/tắt nhạc">🔇</button>
   <header class="dau-trang">
     <h1><span class="lop">Lớp C4</span><span class="cua">của chúng mình</span></h1>
     <p id="soBan">Các bạn nhỏ và 2 cô giáo</p>
@@ -228,7 +234,7 @@ img.hong{background:repeating-linear-gradient(45deg,var(--kem2),var(--kem2) 8px,
 <section id="vuon" class="khung an">
   <div class="thanh-tren">
     <div class="logo">🎒 Lớp C4</div>
-    <button id="nutDoi">Đổi người xem</button>
+    <div style="display:flex;gap:8px"><button class="nut-nhac" aria-label="Bật/tắt nhạc">🔇</button><button id="nutDoi">Đổi người xem</button></div>
   </div>
   <div id="noiDung"></div>
 </section>
@@ -376,6 +382,72 @@ const anhMoc = m => gop(dsAnh(m.anh), theoTen(m.tenAnh));
 const anhLopCo = () => chuanAnh(L.anhCoVoiLop) && chuanAnh(L.anhCoVoiLop).tep ? chuanAnh(L.anhCoVoiLop) : theoTen('co-voi-lop')[0] || null;
 const anhCuaCo = () => gop(dsAnh(L.anhCo), theoTen('co-voi-lop'));
 
+/* ================= Nhạc nền =================
+   Nếu repo có file nhac.mp3 thì phát file đó (lặp lại). Không có thì phát giai điệu hộp nhạc
+   do trang tự tạo (giai điệu tự sáng tác, không vướng bản quyền).
+   Trình duyệt chỉ cho phát nhạc sau khi người xem chạm vào trang, nên nhạc bắt đầu khi bố mẹ vào lớp. */
+const NHAC = { bat: (()=>{ try{ return localStorage.getItem('lop-c4-nhac') !== 'tat'; }catch(e){ return true; } })(), dangPhat:false, audio:null, ctx:null, hen:null, coFile:null };
+const GIAI_DIEU = [ // [nốt MIDI, số phách] — nhịp 3/4
+  [76,1],[79,1],[81,1],[79,2],[76,1],[74,1],[76,1],[79,1],[72,3],
+  [76,1],[79,1],[84,1],[83,2],[81,1],[79,1],[81,1],[76,1],[74,3],
+  [76,1],[79,1],[81,1],[84,2],[81,1],[79,1],[76,1],[74,1],[76,3],
+  [74,1],[76,1],[79,1],[81,2],[79,1],[76,1],[74,1],[74,1],[72,3]];
+const BE_TRAM = [48,48,43,48, 48,43,45,43, 41,41,43,48, 48,41,43,48]; // nốt gốc mỗi ô nhịp
+const hz = n => 440*Math.pow(2,(n-69)/12);
+function notHop(ctx, dich, n, luc, dai, to){
+  [[1,'sine',1],[2,'sine',.25],[4,'triangle',.06]].forEach(([boi,kieu,am])=>{
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = kieu; o.frequency.value = hz(n)*boi;
+    g.gain.setValueAtTime(0, luc); g.gain.linearRampToValueAtTime(to*am, luc+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, luc+dai);
+    o.connect(g); g.connect(dich); o.start(luc); o.stop(luc+dai+0.05);
+  });
+}
+function phatHopNhac(){
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  const ctx = NHAC.ctx || (NHAC.ctx = new AC()); ctx.resume();
+  const tong = ctx.createGain(); tong.gain.value = 0.22; tong.connect(ctx.destination); NHAC.tong = tong;
+  const phach = 0.6, dai = GIAI_DIEU.reduce((s,x)=>s+x[1],0)*phach;
+  let batDau = ctx.currentTime + 0.15;
+  const lenLich = ()=>{
+    let t = batDau;
+    GIAI_DIEU.forEach(([n,p])=>{ notHop(ctx, tong, n, t, Math.max(1.2, p*phach*1.6), 0.5); t += p*phach; });
+    BE_TRAM.forEach((n,k)=>{ const o = batDau + k*3*phach; notHop(ctx, tong, n, o, 2.2, 0.28); notHop(ctx, tong, n+7, o+phach, 1.2, 0.14); notHop(ctx, tong, n+12, o+2*phach, 1.2, 0.12); });
+    batDau += dai + phach*3;  // nghỉ một ô rồi lặp
+    NHAC.hen = setTimeout(lenLich, (batDau - ctx.currentTime - 1.5)*1000);
+  };
+  lenLich();
+}
+function dungHopNhac(){ clearTimeout(NHAC.hen); if (NHAC.tong){ const g = NHAC.tong; try{ g.gain.setTargetAtTime(0, NHAC.ctx.currentTime, 0.2); }catch(e){} setTimeout(()=>g.disconnect(), 800); NHAC.tong = null; } }
+// Danh sách bài: nhac-1.mp3, nhac-2.mp3, ... (hoặc nhac.mp3). Phát lần lượt rồi quay lại bài đầu.
+async function coFileNhac(){
+  if (NHAC.coFile !== null) return NHAC.coFile;
+  const ds = [];
+  for (const ten of ['nhac-1.mp3','nhac-2.mp3','nhac-3.mp3','nhac-4.mp3','nhac.mp3']){
+    try{ const r = await fetch(ten, {method:'HEAD'}); if (r.ok) ds.push(ten); }catch(e){}
+  }
+  NHAC.ds = ds; NHAC.bai = 0; NHAC.coFile = ds.length > 0;
+  return NHAC.coFile;
+}
+async function batNhac(){
+  if (NHAC.dangPhat) return;
+  NHAC.dangPhat = true; capNhatNutNhac();
+  if (await coFileNhac()){
+    if (!NHAC.audio){
+      NHAC.audio = new Audio(NHAC.ds[0]); NHAC.audio.volume = 0.45; NHAC.audio.loop = NHAC.ds.length === 1;
+      NHAC.audio.addEventListener('ended', ()=>{ NHAC.bai = (NHAC.bai + 1) % NHAC.ds.length; NHAC.audio.src = NHAC.ds[NHAC.bai]; if (NHAC.dangPhat) NHAC.audio.play().catch(()=>{}); });
+    }
+    NHAC.audio.play().catch(()=>{ NHAC.dangPhat = false; capNhatNutNhac(); });
+  } else phatHopNhac();
+}
+function tatNhac(){ NHAC.dangPhat = false; if (NHAC.audio) NHAC.audio.pause(); dungHopNhac(); capNhatNutNhac(); }
+function capNhatNutNhac(){ document.querySelectorAll('.nut-nhac').forEach(b=>{ b.textContent = NHAC.dangPhat ? '🎵' : '🔇'; b.classList.toggle('dang-phat', NHAC.dangPhat); b.setAttribute('aria-pressed', NHAC.dangPhat); }); }
+document.addEventListener('click', e=>{
+  if (e.target.closest('.nut-nhac')){ NHAC.bat = !NHAC.dangPhat; try{ localStorage.setItem('lop-c4-nhac', NHAC.bat?'bat':'tat'); }catch(x){} NHAC.bat ? batNhac() : tatNhac(); return; }
+  if (NHAC.bat && NGUOI && !NHAC.dangPhat) batNhac();   // vào lại trang đã nhớ mã: phát ở lần chạm đầu tiên
+});
+document.addEventListener('visibilitychange', ()=>{ if (document.hidden && NHAC.dangPhat){ tatNhac(); NHAC.tamDung = true; } else if (!document.hidden && NHAC.tamDung){ NHAC.tamDung = false; if (NHAC.bat && NGUOI) batNhac(); } });
+
 /* ================= Lớp phủ + nút Quay lại ================= */
 const LOP_MO = [];
 function themLop(el){ document.body.appendChild(el); LOP_MO.push(el); try{ history.pushState({lop:LOP_MO.length}, ''); }catch(e){} }
@@ -485,7 +557,7 @@ function moHop({tieuDe, moTa, hinh, nguoi}){
   const thu = ()=>{
     const ma = chuanHoaMa(o.value);
     if (ma.length!==4){ loi.textContent='Nhập đủ 4 số nhé, ví dụ 0503'; return; }
-    if (dungMa(nguoi, ma)){ boLop(phu); soLanSai=0; NGUOI=nguoi; luu(NGUOI); vaoLop(true); return; }
+    if (dungMa(nguoi, ma)){ boLop(phu); soLanSai=0; NGUOI=nguoi; luu(NGUOI); vaoLop(true); if (NHAC.bat) batNhac(); return; }
     soLanSai++;
     o.classList.remove('rung'); void o.offsetWidth; o.classList.add('rung');
     loi.textContent = soLanSai>=3 ? (nguoi.loai==='co' ? 'Mã của cô có trên tấm thiệp. Cô nhắn anh Hùng (Hội trưởng) nếu cần nhé.' : 'Vẫn chưa đúng. Bố mẹ nhắn anh Hùng (Hội trưởng) để kiểm tra lại ngày sinh của con nhé.')
