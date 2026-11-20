@@ -825,6 +825,7 @@ function trangNamHoc(){
         <h3 class="tieu">${m.ico} ${esc(m.ten)}</h3>
         <div class="ngay">${m.ngay}${qua?(ds.length?` · ${ds.length} ảnh`:''):' · sắp tới'}</div>
         ${m.ghiChu?`<div class="chua-anh" style="font-size:14px;color:var(--chu)">${esc(m.ghiChu)}</div>`:''}
+        ${qua && m.video ? `<video src="${esc(m.video)}" ${m.poster?`poster="${esc(m.poster)}"`:''} controls playsinline preload="none" style="width:100%;border-radius:14px;margin:8px 0;background:#000"></video>` : ''}
         ${qua && m.thu ? `<div class="thu-moc"><b>${esc(m.thu.tieuDe||'💌')}</b><div>${esc(m.thu.noiDung)}</div>${m.thu.ky?`<div class="ky-co">${esc(m.thu.ky)}</div>`:''}</div>` : ''}
         ${qua ? (ds.length ? album(ds) : (m.ghiChu?'':'<div class="chua-anh">Ảnh đang được cập nhật 🌱</div>')) : ''}
       </div>`; }).join('')}
