@@ -439,7 +439,9 @@ Chúc hai cô luôn mạnh khỏe, bình an và mãi vui với nghề.`,
    "ngay": "20/11/2026",
    "ico": "💐",
    "anh": [],
-   "tenAnh": "20-11"
+   "tenAnh": "20-11",
+   "ghiChu": "Các con tặng hoa, thiệp cho 2 cô; cả lớp gửi tặng 2 cô trang kỷ niệm này",
+   "thu": {"tieuDe": "💌 Lời 2 cô gửi các gia đình", "noiDung": "Món quà ý nghĩa nhất mà các cô nhận được ngày 20/11 ạ!\nCô Thảo, cô Thủy xin gửi lời cảm ơn chân thành và sâu sắc nhất tới các bác phụ huynh đã luôn quan tâm, yêu thương và dành những tình cảm tốt đẹp cho các cô nhân dịp Ngày Nhà giáo Việt Nam 20/11.\nTừ tận đáy lòng các cô muốn nói: Món quà ý nghĩa và to lớn nhất đối với các cô không nằm ở giá trị của bông hoa hay món quà, hay tấm thiệp... mà chính là SỰ TÔN TRỌNG, YÊU THƯƠNG, THẤU HIỂU và CHIA SẺ giữa gia đình và với các cô. Là sự tin tưởng của bố mẹ khi gửi gắm những điều quý giá nhất của mình cho các cô; là những lời động viên, những chia sẻ chân thành và sự đồng hành trong từng hoạt động chăm sóc, giáo dục các con. Bởi chỉ khi các gia đình, cô Thuỷ và cô Thảo cùng chung một tình yêu thương, cùng thấu hiểu và đồng hành, các con mới có được môi trường tốt nhất để vui chơi, học tập và lớn lên mỗi ngày trong hạnh phúc.\nCác cô luôn trân trọng sự đồng hành ấy và mong rằng phụ huynh lớp C4 và cô Thảo cô Thuỷ sẽ tiếp tục cùng nhau xây dựng một tập thể lớp tràn ngập yêu thương, nơi mỗi em bé đều được quan tâm, tôn trọng và chắp cánh cho những bước trưởng thành đầu đời.\nCảm ơn bố mẹ vì đã luôn tin tưởng, yêu thương và đồng hành cùng các cô!\nChúc quý phụ huynh và gia đình luôn mạnh khỏe, hạnh phúc. Chúc các con mỗi ngày đến trường đều là một ngày vui! 🌷", "ky": "Cô Thảo, cô Thủy"}
   },
   {
    "ten": "Tết Nguyên đán",

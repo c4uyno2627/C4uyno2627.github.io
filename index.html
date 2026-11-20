@@ -220,6 +220,8 @@ a.nut{display:inline-block;text-decoration:none;margin-top:10px}
 @media (prefers-reduced-motion:reduce){.hai-moc .cuoi,.hai-moc .nhan{animation:none}.hai-moc .cuoi,.hai-moc .nhan.dau{opacity:0}.hai-moc .nhan.sau{opacity:1}}
 .co-nx .loi-co{font-size:17px;line-height:1.6;background:#FFF4F6;border-radius:12px;padding:12px 14px}
 .co-nx .ky-co{text-align:right;font-style:italic;color:var(--chu-nhat);margin-top:6px}
+.thu-moc{background:#FFF4F6;border-radius:14px;padding:12px 14px;margin:8px 0;font-size:15px;line-height:1.65;white-space:pre-line}
+.thu-moc b{display:block;color:var(--dao-dam);margin-bottom:4px}
 /* ===== Màn mở quà cho cô ===== */
 .mo-qua{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
   background:radial-gradient(circle at 50% 38%,#fff6e0 0,#ffe3e8 45%,#f6c8d4 100%);cursor:pointer;transition:opacity .7s}
@@ -823,6 +825,7 @@ function trangNamHoc(){
         <h3 class="tieu">${m.ico} ${esc(m.ten)}</h3>
         <div class="ngay">${m.ngay}${qua?(ds.length?` · ${ds.length} ảnh`:''):' · sắp tới'}</div>
         ${m.ghiChu?`<div class="chua-anh" style="font-size:14px;color:var(--chu)">${esc(m.ghiChu)}</div>`:''}
+        ${qua && m.thu ? `<div class="thu-moc"><b>${esc(m.thu.tieuDe||'💌')}</b><div>${esc(m.thu.noiDung)}</div>${m.thu.ky?`<div class="ky-co">${esc(m.thu.ky)}</div>`:''}</div>` : ''}
         ${qua ? (ds.length ? album(ds) : (m.ghiChu?'':'<div class="chua-anh">Ảnh đang được cập nhật 🌱</div>')) : ''}
       </div>`; }).join('')}
     </div></div>`;
