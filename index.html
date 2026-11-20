@@ -210,6 +210,16 @@ audio.giong{width:100%;height:40px;margin:4px 0}
 .thu-khoa{text-align:center}.thu-khoa .phong-bi{font-size:44px}
 .sap-co{background:#F4FAEE;border:1.5px dashed var(--la)}.sap-co p{margin:6px 0}
 a.nut{display:inline-block;text-decoration:none;margin-top:10px}
+.hai-moc{position:relative;display:inline-block}
+.hai-moc .cuoi{position:absolute;inset:0;animation:moc-doi 8s ease-in-out infinite}
+.hai-moc .nhan{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-style:normal;font-size:11px;font-weight:700;background:var(--nang);color:var(--chu);padding:1px 8px;border-radius:99px;white-space:nowrap}
+.hai-moc .nhan.sau{background:var(--dao-dam);color:#fff;animation:moc-doi 8s ease-in-out infinite}
+.hai-moc .nhan.dau{animation:moc-doi-nguoc 8s ease-in-out infinite}
+@keyframes moc-doi{0%,40%{opacity:0}50%,90%{opacity:1}100%{opacity:0}}
+@keyframes moc-doi-nguoc{0%,40%{opacity:1}50%,90%{opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hai-moc .cuoi,.hai-moc .nhan{animation:none}.hai-moc .cuoi,.hai-moc .nhan.dau{opacity:0}.hai-moc .nhan.sau{opacity:1}}
+.co-nx .loi-co{font-size:17px;line-height:1.6;background:#FFF4F6;border-radius:12px;padding:12px 14px}
+.co-nx .ky-co{text-align:right;font-style:italic;color:var(--chu-nhat);margin-top:6px}
 /* ===== Màn mở quà cho cô ===== */
 .mo-qua{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;
   background:radial-gradient(circle at 50% 38%,#fff6e0 0,#ffe3e8 45%,#f6c8d4 100%);cursor:pointer;transition:opacity .7s}
@@ -408,6 +418,7 @@ const theoTen = tt => !tt ? [] : ANH_DS.filter(p=>{ const f = tenFile(p); return
 const anhNhoCua = i => { const tt = L.be[i].tenAnh, p = tt && `anh/nho/nho-${tt}.jpg`;
   if (p && ANH_DS.includes(p)) return p; const dd = anhDaiDienCua(i); return dd && dd.tep ? dd.tep : null; };
 const hinhCay = i => { const p = anhNhoCua(i); return p ? `<img class="anh-tron" src="${esc(p)}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(svgHoa(${i})))">` : svgHoa(i); };
+const anhCuoiNamCua = i => { const tt = L.be[i].tenAnh; return tt ? theoTen(tt).find(a=>/^cuoi-nam/.test(tenFile(a.tep))) : null; };
 const giongCua = i => { const tt = L.be[i].tenAnh; return !tt ? [] : AM_DS.filter(p=>trongThuMuc(p,tt) || tenFile(p).startsWith(tt+'-')); };
 const theGiong = p => `<audio class="giong" src="${esc(p)}" controls preload="none"></audio>`;
 function gop(...nhom){ const da = new Set(), kq = [];
@@ -417,7 +428,7 @@ function anhDaiDienCua(i){
   const ds = theoTen(b.tenAnh); if (!ds.length) return null;
   return ds.find(a=>{ const f = tenFile(a.tep); return f.startsWith(b.tenAnh+'-dai-dien') || (trongThuMuc(a.tep,b.tenAnh) && f.startsWith('dai-dien')); }) || null;   // chỉ dùng ảnh tên dai-dien, không lấy bừa ảnh đầu tiên
 }
-const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh).filter(a=>!/^([a-z0-9-]+-)?dai-dien/.test(tenFile(a.tep))));   // ảnh đại diện (đã cắt vuông) không lặp lại trong album
+const anhRiengCua = i => gop(dsAnh(L.be[i].anh), theoTen(L.be[i].tenAnh).filter(a=>!/^([a-z0-9-]+-)?(dai-dien|cuoi-nam)/.test(tenFile(a.tep))));   // ảnh đại diện (đã cắt vuông) không lặp lại trong album
 const anhMoc = m => gop(dsAnh(m.anh), theoTen(m.tenAnh));
 const anhLopCo = () => chuanAnh(L.anhCoVoiLop) && chuanAnh(L.anhCoVoiLop).tep ? chuanAnh(L.anhCoVoiLop) : theoTen('co-voi-lop')[0] || null;
 const anhCuaCo = () => gop(dsAnh(L.anhCo), theoTen('co-voi-lop'));
@@ -834,7 +845,10 @@ function trangRieng(){
     if (sn.con===0) snHTML = `<div class="sinh-nhat-lon"><div class="banh">🎂</div><h2>Chúc mừng sinh nhật ${esc(b.goi)}!</h2><p>Cô Thảo, cô Thủy và cả lớp C4 chúc con tuổi mới thật khỏe, thật ngoan và luôn vui cười!</p></div>`;
     else if (sn.con<0) snHTML = `<div class="sinh-nhat-lon"><div class="banh">🎈</div><h2>Sinh nhật vui vẻ nhé ${esc(b.goi)}!</h2><p>Sinh nhật con vừa qua ${-sn.con} ngày. Cả lớp chúc con tuổi mới thật vui!</p></div>`;
     else snHTML = `<div class="the" style="text-align:center"><div style="font-size:40px">🎂</div><b class="tieu" style="font-size:22px">Còn ${sn.con} ngày nữa</b><div class="nho-xam">là đến sinh nhật ${esc(b.goi)} (${b.sn})</div></div>`;
-    const anhDD = `<div class="khung-hoa">${svgHoa(i)}${dd && dd.tep ? `<button data-album="${ALBUM.push([dd])-1}" data-vt="0">${theAnh(dd,'anh-tron')}</button>` : ''}</div>`;
+    const cn = anhCuoiNamCua(i);
+    const anhDD = `<div class="khung-hoa">${svgHoa(i)}${dd && dd.tep ? `<button data-album="${ALBUM.push(cn?[dd,cn]:[dd])-1}" data-vt="0">${cn
+      ? `<span class="hai-moc">${theAnh(dd,'anh-tron')}${theAnh(cn,'anh-tron cuoi')}<i class="nhan dau">Đầu năm</i><i class="nhan sau">Cuối năm</i></span>`
+      : theAnh(dd,'anh-tron')}</button>` : ''}</div>`;
     const cungNgay = L.be.filter((x,k)=>k!==i && x.sn===b.sn && !x.chuyenTruong && !cacBeCuaToi().includes(k)).map(x=>x.goi);
     return `
       <div class="the chao-lon" style="text-align:center">${anhDD}<h2 style="margin-top:6px">Góc của ${esc(b.goi)}</h2><p class="nho-xam">${esc(b.ten)}</p></div>
@@ -844,6 +858,7 @@ function trangRieng(){
       ${snHTML}
       ${cungNgay.length?`<div class="the" style="text-align:center">🎈 ${esc(b.goi)} có ${cungNgay.length} bạn sinh cùng ngày: <b>${esc(cungNgay.join(', '))}</b></div>`:''}
       ${giongCua(i).length?`<div class="the"><div class="tieu-de tieu">🎙️ Giọng của ${esc(b.goi)}</div><p class="nho-xam" style="margin:0 0 8px">Ghi lại năm học ${esc(L.lop.namHoc)}</p>${giongCua(i).map(theGiong).join('')}</div>`:''}
+      ${b.coNhanXet?`<div class="the co-nx"><div class="tieu-de tieu">👩‍🏫 Cô nói về ${esc(b.goi)}</div><div class="loi-co">${esc(b.coNhanXet)}</div><div class="ky-co">Cô Thảo, cô Thủy</div></div>`:''}
       ${b.cauNoi?`<div class="the"><div class="tieu-de tieu">💬 ${esc(b.goi)} nói thế đấy</div>${[].concat(b.cauNoi).map(c=>`<div class="cau-noi">“${esc(c)}”</div>`).join('')}</div>`:''}
       ${b.thuGuiCon?(HN>=pd(L.lop.tongKet)
         ? `<div class="the"><div class="tieu-de tieu">💌 Thư bố mẹ gửi con</div><div class="loi-bo-me">${esc(b.thuGuiCon)}</div></div>`
