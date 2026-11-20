@@ -858,7 +858,9 @@ function trangRieng(){
       ${snHTML}
       ${cungNgay.length?`<div class="the" style="text-align:center">🎈 ${esc(b.goi)} có ${cungNgay.length} bạn sinh cùng ngày: <b>${esc(cungNgay.join(', '))}</b></div>`:''}
       ${giongCua(i).length?`<div class="the"><div class="tieu-de tieu">🎙️ Giọng của ${esc(b.goi)}</div><p class="nho-xam" style="margin:0 0 8px">Ghi lại năm học ${esc(L.lop.namHoc)}</p>${giongCua(i).map(theGiong).join('')}</div>`:''}
-      ${b.coNhanXet?`<div class="the co-nx"><div class="tieu-de tieu">👩‍🏫 Cô nói về ${esc(b.goi)}</div><div class="loi-co">${esc(b.coNhanXet)}</div><div class="ky-co">Cô Thảo, cô Thủy</div></div>`:''}
+      <div class="the co-nx"><div class="tieu-de tieu">👩‍🏫 Cô nói về ${esc(b.goi)}</div>${b.coNhanXet
+        ? `<div class="loi-co">${esc(b.coNhanXet)}</div><div class="ky-co">Cô Thảo, cô Thủy</div>`
+        : `<p class="nho-xam" style="margin:0">Lời cô nhận xét về ${esc(b.goi)} sẽ có vào dịp tổng kết cuối năm học 🌸</p>`}</div>
       ${b.cauNoi?`<div class="the"><div class="tieu-de tieu">💬 ${esc(b.goi)} nói thế đấy</div>${[].concat(b.cauNoi).map(c=>`<div class="cau-noi">“${esc(c)}”</div>`).join('')}</div>`:''}
       ${b.thuGuiCon?(HN>=pd(L.lop.tongKet)
         ? `<div class="the"><div class="tieu-de tieu">💌 Thư bố mẹ gửi con</div><div class="loi-bo-me">${esc(b.thuGuiCon)}</div></div>`
